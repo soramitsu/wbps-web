@@ -3,11 +3,7 @@
     <s-button class="app-menu-button" type="action" primary icon="basic-more-horizontal-24" @click="toggleMenu" />
     <app-logo-button class="app-logo--header" responsive :theme="libraryTheme" @click="goTo(PageNames.Swap)" />
     <div class="app-controls app-controls--middle s-flex">
-      <app-marketing v-show="!isMobile" />
-      <s-button :class="fiatBtnClass" :type="fiatBtnType" size="medium" @click="goTo(PageNames.DepositOptions)">
-        <pair-token-logo class="payment-icon" :first-token="xor" :second-token="eth" :size="fiatBtnSize" />
-        <span v-if="!isAnyMobile">{{ t('moonpay.buttons.buy') }}</span>
-      </s-button>
+      <!-- <app-marketing v-show="!isMobile" />  -->
     </div>
     <div class="app-controls s-flex">
       <app-account-button :disabled="loading" @click="navigateToWallet" />
@@ -75,15 +71,6 @@ export default class AppHeader extends Mixins(InternalConnectMixin) {
       size: WALLET_CONSTS.LogoSize.MEDIUM,
       tokenSymbol: XOR.symbol,
     };
-  }
-
-  get fiatBtnClass(): string[] {
-    const base = ['app-controls-fiat-btn', 'active'];
-
-    if ([PageNames.DepositOptions, PageNames.CedeStore].includes(this.$route.name as PageNames))
-      base.push('app-controls-fiat-btn--active', 's-pressed');
-
-    return base;
   }
 
   get fiatBtnType(): string {

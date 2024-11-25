@@ -44,18 +44,6 @@
                 />
               </s-menu-item>
             </s-menu-item-group>
-            <s-menu-item-group>
-              <app-sidebar-item-content
-                v-button
-                class="menu-item menu-item--bottom el-menu-item s-flex"
-                icon="finance-PSWAP-24"
-                href="https://about.polkaswap.io"
-                tag="a"
-                target="_blank"
-                rel="nofollow noopener"
-                :title="t('mainMenu.About')"
-              />
-            </s-menu-item-group>
           </s-menu>
 
           <s-menu
@@ -87,7 +75,7 @@
                 tabindex="0"
               />
             </app-info-popper>
-            <app-sidebar-item-content
+            <!-- <app-sidebar-item-content
               v-if="faucetUrl"
               :icon="FaucetLink.icon"
               :title="t(`footerMenu.${FaucetLink.title}`)"
@@ -96,7 +84,7 @@
               target="_blank"
               rel="nofollow noopener"
               class="el-menu-item menu-item--small"
-            />
+            />  -->
           </s-menu>
         </div>
       </aside>
@@ -187,7 +175,11 @@ export default class AppMenu extends Mixins(TranslationMixin) {
   }
 
   get sidebarMenuItems(): Array<SidebarMenuItemLink> {
+    const wbpsMenuItems = [PageNames.Manage, PageNames.Wallet, PageNames.OrderBook];
+
     let menuItems = SidebarMenuGroups;
+
+    menuItems = menuItems.filter(({ title }) => wbpsMenuItems.includes(title));
 
     if (!this.orderBookEnabled) {
       menuItems = menuItems.filter(({ title }) => title !== PageNames.OrderBook);

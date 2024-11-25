@@ -13,9 +13,9 @@ import type { Alert } from '@soramitsu/soraneo-wallet-web/lib/types/common';
 
 export const app = {
   version: pkg.version,
-  name: 'Polkaswap',
+  name: 'Presto',
   email: 'jihoon@tutanota.de',
-  title: 'Polkaswap — The DEX for the Interoperable Future.',
+  title: 'Presto — The World Bank.',
 };
 
 export const WalletPermissions = {
@@ -131,9 +131,6 @@ export enum PageNames {
   BridgeTransaction = 'BridgeTransaction',
   BridgeTransactionsHistory = 'BridgeTransactionsHistory',
   Tokens = 'Tokens',
-  DepositOptions = 'DepositOptions',
-  DepositTxHistory = 'DepositTxHistory',
-  CedeStore = 'CedeStore',
   StakingContainer = 'StakingContainer',
   // just for router name & different titles
   ExploreContainer = 'Explore/Container',
@@ -147,10 +144,11 @@ export enum PageNames {
   OrderBook = 'OrderBook',
   LimitOrderBuy = 'OrderBook/LimitOrderBuy',
   LimitOrderSell = 'OrderBook/LimitOrderSell',
-  SoraCard = 'SoraCard',
   AssetOwnerContainer = 'AssetOwnerContainer',
   VaultsContainer = 'VaultsContainer',
   Burn = 'Burn',
+  /* PRESTO pages **/
+  Manage = 'Manage',
 }
 
 export enum Components {
@@ -179,22 +177,6 @@ export enum Components {
   SelectNodeDialog = 'App/Settings/Node/SelectNodeDialog',
   SelectNode = 'App/Settings/Node/SelectNode',
   NodeInfo = 'App/Settings/Node/NodeInfo',
-  // SORA Card
-  Dashboard = 'pages/SoraCard/Dashboard/Dashboard',
-  BalanceIndicator = 'pages/SoraCard/common/BalanceIndicator',
-  SoraCardIntroPage = 'pages/SoraCard/SoraCardIntroPage',
-  SoraCardKYC = 'pages/SoraCard/SoraCardKYC',
-  ConfirmationInfo = 'pages/SoraCard/ConfirmationInfo',
-  TermsAndConditions = 'pages/SoraCard/steps/TermsAndConditions',
-  ToSDialog = 'pages/SoraCard/steps/ToSDialog',
-  SelectCountryDialog = 'pages/SoraCard/steps/SelectCountryDialog',
-  Phone = 'pages/SoraCard/steps/Phone',
-  Email = 'pages/SoraCard/steps/Email',
-  Payment = 'pages/SoraCard/steps/Payment',
-  Guidance = 'pages/SoraCard/steps/Guidance',
-  KycView = 'pages/SoraCard/steps/KycView',
-  // Paywings
-  PaywingsDialog = 'SoraCard/Paywings/PaywingsDialog',
   // Bridge Page
   BridgeTransactionDetails = 'pages/Bridge/TransactionDetails',
   BridgeTransferNotification = 'pages/Bridge/TransferNotification',
@@ -204,11 +186,6 @@ export enum Components {
   BridgeLimitCard = 'pages/Bridge/LimitCard',
   BridgeAccountPanel = 'pages/Bridge/AccountPanel',
   BridgeNodeIcon = 'pages/Bridge/NodeIcon',
-  // Moonpay Page
-  Moonpay = 'pages/Moonpay/Moonpay',
-  MoonpayNotification = 'pages/Moonpay/Notification',
-  MoonpayConfirmation = 'pages/Moonpay/Confirmation',
-  MoonpayHistory = 'pages/Moonpay/MoonpayHistory',
   // Swap Page
   SwapFormWidget = 'pages/Swap/Widget/Form',
   SwapTransactionsWidget = 'pages/Swap/Widget/Transactions',
@@ -289,6 +266,10 @@ export enum Components {
   // Shared Chart
   ChartSkeleton = 'shared/Chart/ChartSkeleton',
   DataRowSkeleton = 'shared/Skeleton/DataRow',
+
+  /* PRESTO components **/
+  InvestorDeposit = 'pages/Investor/Deposit',
+  InvestorWithdraw = 'pages/Investor/Withdraw',
 }
 
 export enum LimitOrderType {
@@ -333,6 +314,11 @@ const MainMenu: Array<SidebarMenuItemLink> = [
     icon: 'arrows-swap-90-24',
     title: PageNames.Swap,
     href: '/#/swap',
+  },
+  {
+    icon: 'arrows-swap-90-24',
+    title: PageNames.Manage,
+    href: '/#/manage',
   },
   {
     icon: 'music-CD-24',
@@ -385,16 +371,6 @@ const OtherPagesMenu: Array<SidebarMenuItemLink> = [
     title: PageNames.Stats,
     href: '/#/stats',
   },
-  // {
-  //   icon: 'basic-flame-24',
-  //   title: PageNames.Burn,
-  //   href: '/#/burn',
-  // },
-  // {
-  //   icon: 'music-eject-24',
-  //   title: PageNames.SoraCard,
-  //   href: '/#/card',
-  // },
   {
     icon: 'various-rocket-24',
     title: PageNames.AssetOwnerContainer,
@@ -408,26 +384,6 @@ export const SocialNetworkLinks: Array<SidebarMenuItemLink> = [
     icon: 'symbols-24',
     title: 'wiki',
     href: 'https://wiki.sora.org/',
-  },
-  {
-    icon: 'symbols-telegram-24',
-    title: 'telegram',
-    href: 'https://t.me/polkaswap',
-  },
-  {
-    icon: 'symbols-twitter-24',
-    title: 'twitter',
-    href: 'https://twitter.com/polkaswap',
-  },
-  {
-    icon: 'symbols-hash-24',
-    title: 'reddit',
-    href: 'https://www.reddit.com/r/Polkaswap',
-  },
-  {
-    icon: 'symbols-peace-24',
-    title: 'medium',
-    href: 'https://medium.com/polkaswap',
   },
   {
     icon: 'symbols-github-24',
@@ -487,13 +443,6 @@ export enum Topics {
   AddLiquidity = 'AddLiquidity',
   PriceFeeds = 'PriceFeeds',
 }
-
-export const AboutTopics = [
-  { title: Topics.SwapTokens, icon: 'arrows-swap-24' },
-  { title: Topics.PassiveEarning, icon: 'basic-bar-chart-24' },
-  { title: Topics.AddLiquidity, icon: 'basic-drop-24' },
-  { title: Topics.PriceFeeds, icon: 'software-terminal-24' },
-];
 
 export const MaxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 export const EthAddress = '0x0000000000000000000000000000000000000000';

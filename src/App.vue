@@ -471,6 +471,12 @@ export default class App extends Mixins(mixins.TransactionMixin, NodeErrorMixin)
 </script>
 
 <style lang="scss">
+button.el-button.neumorphic.s-primary.focusing,
+button.el-button.neumorphic.s-primary:focus,
+button.el-button.neumorphic.s-primary:hover {
+  box-shadow: unset !important;
+}
+
 html {
   overflow-y: hidden;
   font-size: var(--s-font-size-small);
