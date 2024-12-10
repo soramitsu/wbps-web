@@ -61,10 +61,28 @@ const routes: Array<RouteConfig> = [
     redirect: '/wallet',
   },
   {
+    path: '/crop-receipts',
+    name: PageNames.CropReceiptContainer,
+    component: lazyView(PageNames.CropReceiptContainer),
+    children: [
+      {
+        path: '',
+        name: PageNames.CropReceipts,
+        component: lazyView(PageNames.CropReceipts),
+      },
+      {
+        path: ':id',
+        name: PageNames.CropReceiptDetails,
+        component: lazyView(PageNames.CropReceiptDetails),
+      },
+    ],
+  },
+  {
     path: '/manage',
     name: PageNames.Manage,
     component: lazyView(PageNames.Manage),
   },
+
   {
     path: '/wallet',
     name: PageNames.Wallet,

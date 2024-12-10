@@ -175,7 +175,7 @@ export default class AppMenu extends Mixins(TranslationMixin) {
   }
 
   get sidebarMenuItems(): Array<SidebarMenuItemLink> {
-    const wbpsMenuItems = [PageNames.Manage, PageNames.Wallet, PageNames.OrderBook];
+    const wbpsMenuItems = [PageNames.Manage, PageNames.Wallet, PageNames.OrderBook, PageNames.CropReceipts];
 
     let menuItems = SidebarMenuGroups;
 

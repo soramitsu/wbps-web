@@ -149,13 +149,15 @@ export enum PageNames {
   Burn = 'Burn',
   /* PRESTO pages **/
   Manage = 'Manage',
+  CropReceiptContainer = 'CropReceiptContainer',
+  CropReceipts = 'CropReceipts',
+  CropReceiptDetails = 'CropReceiptDetails',
 }
 
 export enum Components {
   // App
   AppLogoButton = 'App/Header/AppLogoButton',
   AppMarketing = 'App/Header/AppMarketing',
-  AppMobilePopup = 'App/MobilePopup',
   AppBrowserNotifsEnableDialog = 'App/BrowserNotification/EnableDialog',
   AppBrowserNotifsBlockedDialog = 'App/BrowserNotification/BlockedDialog',
   AppBrowserNotifsLocalStorageOverride = 'App/BrowserNotification/LocalStorageOverride',
@@ -319,6 +321,11 @@ const MainMenu: Array<SidebarMenuItemLink> = [
     icon: 'arrows-swap-90-24',
     title: PageNames.Manage,
     href: '/#/manage',
+  },
+  {
+    icon: 'basic-circle-star-24',
+    title: PageNames.CropReceipts,
+    href: '/#/crop-receipts',
   },
   {
     icon: 'music-CD-24',
