@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { mixins, components } from '@soramitsu/soraneo-wallet-web';
+import { mixins, components, api } from '@soramitsu/soraneo-wallet-web';
 import { Component, Mixins } from 'vue-property-decorator';
 
 import { Components } from '@/consts';
@@ -61,9 +61,17 @@ export default class Deposit extends Mixins(mixins.TransactionMixin, mixins.Dial
   Country:\n
   `;
 
-  onCreate(): void {}
+  onCreate(): void {
+    this.withNotifications(async () => {
+      await api.presto.createWithdrawRequest(this.amountToWithdraw, this.bankDetails);
 
-  onCancel(): void {}
+      this.isVisible = false;
+    });
+  }
+
+  onCancel(): void {
+    this.isVisible = false;
+  }
 }
 </script>
 

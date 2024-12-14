@@ -15,7 +15,10 @@
       </div>
       <div class="crop-receipt-header">
         <h3>Crop receipt</h3>
-        <div>{{ status }}</div>
+        <div class="status">
+          <span :class="getBalanceIndicatorClass(details.status)"></span>
+          <div>{{ details.status }}</div>
+        </div>
       </div>
       <s-divider />
       <s-scrollbar class="crop-receipt-scrollbar">
@@ -24,51 +27,51 @@
           <div class="grid">
             <div class="date">
               <div class="subtitle">Date of issue</div>
-              <div>12.12.2024</div>
+              <div>{{ details.dateOfIssue }}</div>
             </div>
             <div class="debitor">
               <div class="subtitle">Debitor</div>
-              <div>Carl O’Connell</div>
-              <div>Tokyo, Shibuya 72</div>
-              <div>123-456-789</div>
+              {{ details.debtor }}
             </div>
             <div class="amount">
               <div class="subtitle">Amount of loan, USD</div>
-              <div>500 000</div>
+              <div>{{ details.amount }}</div>
             </div>
             <div class="place">
               <div class="subtitle">Place of issue</div>
-              <div>Porto, Portugal</div>
+              <div>{{ details.placeOfIssue }}</div>
             </div>
             <div class="creditor">
               <div class="subtitle">Creditor</div>
-              <div>Carl O’Connell</div>
-              <div>Tokyo, Shibuya 72</div>
-              <div>123-456-789</div>
+              {{ details.creditor }}
             </div>
             <div class="performance">
               <div class="subtitle">Performance time</div>
-              <div>12.12.2024</div>
+              <div>{{ details.performanceTime }}</div>
+            </div>
+            <div class="rating">
+              <div class="subtitle">Country</div>
+              <div>{{ details.country }}</div>
             </div>
             <div class="rating">
               <div class="subtitle">Rating</div>
-              <div>Unset</div>
+              <div>{{ details.score.rating }}</div>
             </div>
           </div>
           <s-divider />
           <div class="conditions">
             <h5>Basic conditions</h5>
-            <div v-for="(condition, idx) in conditions.basic" :key="idx">
+            <div v-for="(condition, idx) in conditions.basic" :key="idx + 100">
               <div class="subtitle">{{ condition.field }}</div>
               <div>{{ condition.value }}</div>
             </div>
             <h5>Additional conditions</h5>
-            <div v-for="(condition, idx) in conditions.basic" :key="idx">
+            <div v-for="(condition, idx) in conditions.additional" :key="idx + 200">
               <div class="subtitle">{{ condition.field }}</div>
               <div>{{ condition.value }}</div>
             </div>
             <h5>Final provision</h5>
-            <div v-for="(condition, idx) in conditions.basic" :key="idx">
+            <div v-for="(condition, idx) in conditions.final" :key="idx + 300">
               <div class="subtitle">{{ condition.field }}</div>
               <div>{{ condition.value }}</div>
             </div>
@@ -89,19 +92,43 @@
 </template>
 
 <script lang="ts">
-import { components, mixins } from '@soramitsu/soraneo-wallet-web';
+import { api, components, mixins } from '@soramitsu/soraneo-wallet-web';
 import { Component, Mixins } from 'vue-property-decorator';
 
 import TranslationMixin from '@/components/mixins/TranslationMixin';
 import { PageNames } from '@/consts';
 import router from '@/router';
+import { state } from '@/store/decorators';
 
 @Component({
   components: {},
 })
 export default class CropReceiptDetails extends Mixins(TranslationMixin, mixins.LoadingMixin) {
-  get status(): string {
-    return 'New';
+  @state.wallet.account.address accountAddress!: string;
+
+  details = {} as any;
+
+  getBalanceIndicatorClass(status): string {
+    const base = ['status-indicator'];
+
+    switch (status) {
+      case 'Approved':
+        base.push('status-indicator--approved');
+        break;
+      case 'Rating':
+        base.push('status-indicator--rating');
+        break;
+      case 'Declined':
+        base.push('status-indicator--declined');
+        break;
+      case 'Decision':
+        base.push('status-indicator--decision');
+        break;
+      default:
+        break;
+    }
+
+    return base.join(' ');
   }
 
   handleBack(): void {
@@ -164,7 +191,67 @@ Secured Claims Value: The Pledge secures the full value of the Secured Claims, r
           'Creditor is [not] entitled to assign its rights under the Crop Receipt [without the prior written consent of the Debtor] / [in the absence / presence of the following conditions: ________________________] to any third party [(except [specify the name of the specific individual or legal entity to whom the rights can be assigned])] by making an Inscription of Assignment. Change of the Debtor under the Crop Receipt is not allowed',
       },
     ],
+    additional: [
+      {
+        field: "Debtor's Guarantees:",
+        value: `
+The Debtor represents, acknowledges and guarantees that:
+
+(i) the future harvest of agricultural produce, which is the Subject of the Pledge under the Crop Receipt, is not alienated in any way and is not encumbered in favor of other individuals or legal entities, including under other Crop receipts, and is not the disputed (including in court); is not seized (arrested) and / or bailed, and no third parties have any interest in it;
+
+(ii) The subject of the Pledge is not encumbered by any debts or obligations [except as a security against fulfillment by the Debtor's of obligations under crop receipts, issued earlier, namely: [provide information on such crop receipts]];
+
+(iii) The Debtor has the right [of ownership and / or to use] to the Land Plots and is entitled to issue this Crop Receipt;
+
+(iv) The debtor is not aware of any disputes concerning his rights to use the Land Plots for growing of agricultural produce; and
+
+(v) The creditor and / or his representatives will have unimpeded access to the places of growing and storage of the Subject of Pledge.`,
+      },
+      {
+        field: 'Insurance:',
+        value:
+          'The Debtor is [obliged / entitled] at its own expense to insure in favor of the Creditor the future harvest and / or the harvested crop, which is the Subject of Pledge, having previously agreed in writing with the Creditor the list of insurance cases and the insurance company.',
+      },
+      {
+        field: 'Production Technology:',
+        value: `The Debtor undertakes to comply with the agrotechnology specified in Annex №3 for growing produce on the Land Plots. In the event of a dispute between the Debtor and the Creditor regarding the Debtor's compliance with the technology of growing the Subject of Pledge, they will seek [recommendation / dispute resolution] tfrom the following person: [[name or title of the person who will resolve the technology dispute] or [the person whose candidacy will be additionally agreed between the Debtor and the Creditor, and in case of disagreement of any candidacy - the dispute will be resolved in court] - choose what applies].`,
+      },
+    ],
+    final: [
+      {
+        field: 'Advisal of Rights:',
+        value: `By signing this Crop Receipt [each] signatory acknowledges that he/she has read and understood all the provisions of this Crop Receipt, and legal consequences of this document, that is corresponds to his/her real intentions, he/she has no objections to any part of this Crop Receipt, the content of which corresponds to the current legislation and contains all information on the relationship between the Debtor [and Guarantor] and the Creditor; the notary explained the meaning of signing this Crop Receipt and all provisions of the current legislation governing the relations under crop receipts; and that for certification of this Crop Receipt all relevant documents, which are of their final and current version have been made available.`,
+      },
+      {
+        field: 'Signature:',
+        value: `	
+By signing the Crop Receipt the Debtor [and Guarantor] acknowledges that the issuance of the Crop Receipt reflects his/her free will, the Debtor [and Guarantor] is not under the influence of difficult circumstances, is not mistaken with regard to any circumstances of significance (nature of the Crop Receipt, rights and obligations of the Debtor [and Guarantor] and the Creditor, other conditions of the Crop Receipt), and that provisions of the Crop Receipt are favorable for him/her. The Debtor [and Guarantor] accepts the risk of non-fulfilling the provisions of the Crop Receipt due to significant change in the circumstances that the Debtor [and Guarantor] relied upon while issuing this Crop Receipt. On behalf of the Debtor this Crop Receipt is signed by his/her [manager / representative / other authorized signatory] ___________________, which acts on the basis [statute / power of attorney / other document: ____________], whose identity has been established and the authority verified. [On behalf of the Guarantor, this Crop Receipt is signed by his/her [manager / representative/ other authorized signatory] _______________________, acting on the basis of [statute / power of attorney/ other document: ____________], whose identity has been established and authority verified.]
+
+ 
+
+[[The Crop Receipt is not subject to signing by the Creditor.] OR [By signing the Crop Receipt, the Creditor confirms that he/she has received the original copy of the Crop Receipt. On behalf of the Creditor, this Crop Receipt is signed by his/her [manager / representative/ other authorized signatory] _______________________, acting on the basis of [statute / power of attorney/ other document: ____________], whose identity has been established and the authority verified.]]`,
+      },
+    ],
   };
+
+  async created(): Promise<void> {
+    // optimize when coming from another place
+
+    this.withApi(async () => {
+      const cropReceipts = await api.presto.getCropReceipts(this.accountAddress);
+
+      const parsedCropReceipts = cropReceipts.map((request) => ({
+        ...request,
+        status: typeof request.status === 'string' ? request.status : Object.keys(request.status)[0],
+        dateOfIssue: new Date(Number(request.time?.replace(/,/g, ''))).toLocaleDateString('en-US'),
+        performanceTime: new Date(Number(request.perfomanceTime?.replace(/,/g, '') * 1000)).toLocaleDateString('en-US'), // typo on backend
+        closeInitialPeriod: new Date(Number(request.closeInitialPeriod?.replace(/,/g, ''))).toLocaleDateString('en-US'),
+      }));
+
+      const id = this.$route.params.id;
+      if (id) this.details = parsedCropReceipts.find((cr) => cr.crId === id);
+    });
+  }
 }
 </script>
 
@@ -235,5 +322,35 @@ Secured Claims Value: The Pledge secures the full value of the Secured Claims, r
 
 .crop-receipt-scrollbar {
   height: 400px;
+}
+
+.status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .status-indicator {
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+
+    &--approved {
+      background-color: #009900;
+    }
+
+    &--declined {
+      background-color: #ff0000;
+    }
+
+    &--rating {
+      background-color: #ff9900;
+    }
+
+    &--decision {
+      background-color: #1070ca;
+    }
+  }
 }
 </style>

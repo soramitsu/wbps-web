@@ -375,7 +375,6 @@ export default class App extends Mixins(mixins.TransactionMixin, NodeErrorMixin)
   }
 
   goTo(name: PageNames): void {
-    console.log('name', name);
     if (name === PageNames.Rewards) {
       // Rewards is a menu route but we need to show PointSystem by default
       goTo(PageNames.PointSystemWrapper);

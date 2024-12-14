@@ -29,7 +29,7 @@
             </template>
             <template v-slot="{ row }">
               <div>
-                <div>{{ row.id }}</div>
+                <div>{{ row.requestId }}</div>
               </div>
             </template>
           </s-table-column>
@@ -69,7 +69,7 @@
             </template>
             <template v-slot="{ row }">
               <div>
-                <div>{{ row.paymentRef }}</div>
+                <div>{{ row.paymentReference }}</div>
               </div>
             </template>
           </s-table-column>
@@ -85,12 +85,13 @@
             </template>
           </s-table-column>
           <s-table-column width="120">
-            <template>
+            <template v-slot="{ row }">
               <s-button
+                v-if="row.status === 'Pending'"
                 class="investor-cancel-btn s-typography-button--small"
                 size="mini"
                 type="primary"
-                @click="cancelRequest"
+                @click="cancelRequest(row.requestId)"
               >
                 {{ 'Cancel' }}
               </s-button>
@@ -116,13 +117,14 @@
 </template>
 
 <script lang="ts">
-import { components, mixins } from '@soramitsu/soraneo-wallet-web';
+import { api, components, mixins } from '@soramitsu/soraneo-wallet-web';
 import { Component, Mixins } from 'vue-property-decorator';
 
 import ExplorePageMixin from '@/components/mixins/ExplorePageMixin';
 import TranslationMixin from '@/components/mixins/TranslationMixin';
 import InvestorDeposit from '@/components/pages/Investor/Deposit.vue';
 import InvestorWithdraw from '@/components/pages/Investor/Withdraw.vue';
+import { state } from '@/store/decorators';
 
 @Component({
   components: {
@@ -132,50 +134,17 @@ import InvestorWithdraw from '@/components/pages/Investor/Withdraw.vue';
     InvestorWithdraw,
   },
 })
-export default class ManageView extends Mixins(TranslationMixin, mixins.LoadingMixin, ExplorePageMixin) {
+export default class ManageView extends Mixins(
+  TranslationMixin,
+  mixins.LoadingMixin,
+  ExplorePageMixin,
+  mixins.TransactionMixin
+) {
+  @state.wallet.account.address accountAddress!: string;
+
   depositDialogVisibility = false;
   withdrawDialogVisibility = false;
-
-  get requests() {
-    const fixture = {
-      id: '2342',
-      type: 'Deposit',
-      date: '23.11.2024',
-      amount: '343.88',
-      paymentRef: 'Invoice #3452',
-      status: 'Approved',
-    };
-    return [
-      fixture,
-      fixture,
-      fixture,
-      { ...fixture, status: 'Declined' },
-      { ...fixture, status: 'Declined' },
-      fixture,
-      { ...fixture, status: 'Cancelled' },
-      fixture,
-      fixture,
-      { ...fixture, status: 'Pending' },
-      fixture,
-      { ...fixture, status: 'Pending' },
-      fixture,
-      { ...fixture, status: 'Declined' },
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-    ];
-  }
+  requests = [] as any;
 
   get tableItems() {
     return this.getPageItems(this.requests);
@@ -215,7 +184,25 @@ export default class ManageView extends Mixins(TranslationMixin, mixins.LoadingM
   handleWithdraw(): void {
     this.withdrawDialogVisibility = true;
   }
-  cancelRequest(): void {}
+  async cancelRequest(requestId): Promise<void> {
+    this.withNotifications(async () => {
+      await api.presto.cancelRequest(requestId);
+    });
+  }
+
+  async created(): Promise<void> {
+    this.withApi(async () => {
+      const requests = await api.presto.getRequests(this.accountAddress);
+
+      const parsedRequests = requests.map((request) => ({
+        ...request,
+        status: typeof request.status === 'string' ? request.status : Object.keys(request.status)[0],
+        date: new Date(Number(request.time.replace(/,/g, ''))).toLocaleDateString('en-US'),
+      }));
+
+      this.requests = parsedRequests;
+    });
+  }
 }
 </script>
 

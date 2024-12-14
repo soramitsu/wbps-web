@@ -24,7 +24,7 @@
             :default-active="currentPath"
             @select="onSelect"
           >
-            <s-menu-item-group v-for="item in sidebarMenuItems" :key="item.index || item.title">
+            <s-menu-item-group v-for="item in MenuItemsToRender" :key="item.index || item.title">
               <s-menu-item
                 v-button
                 :key="item.title"
@@ -93,8 +93,9 @@
 </template>
 
 <script lang="ts">
+import { api, mixins } from '@soramitsu/soraneo-wallet-web';
 import Theme from '@soramitsu-ui/ui-vue2/lib/types/Theme';
-import { Component, Mixins, Prop } from 'vue-property-decorator';
+import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 
 import TranslationMixin from '@/components/mixins/TranslationMixin';
 import {
@@ -125,13 +126,14 @@ import AppSidebarItemContent from './SidebarItemContent.vue';
     AppSidebarItemContent,
   },
 })
-export default class AppMenu extends Mixins(TranslationMixin) {
+export default class AppMenu extends Mixins(TranslationMixin, mixins.LoadingMixin) {
   @Prop({ default: false, type: Boolean }) readonly visible!: boolean;
   @Prop({ default: () => {}, type: Function }) readonly onSelect!: (item: any) => void;
 
   @state.settings.faucetUrl faucetUrl!: string;
   @state.router.loading pageLoading!: boolean;
   @state.settings.menuCollapsed collapsed!: boolean;
+  @state.wallet.account.address accountAddress!: string;
 
   @getter.settings.orderBookEnabled private orderBookEnabled!: boolean;
   @getter.settings.kensetsuEnabled private kensetsuEnabled!: boolean;
@@ -139,6 +141,12 @@ export default class AppMenu extends Mixins(TranslationMixin) {
   @getter.libraryTheme private libraryTheme!: Theme;
 
   @mutation.settings.setMenuCollapsed private setMenuCollapsed!: (collapsed: boolean) => void;
+
+  InvestorToken = '0x006c8ac19db0977e2a5ea705b0c66b672e1264ad3b407ff0befb6ccf82a32f47';
+  CreditorToken = '0x00f80bdc862dc0b1370c753755b0c06b4cda0aad1af8043dcb8b95e6096a578a';
+  ManagerToken = '0x00300480d205fcbb1a32fd8c9e78f47a097d4b178c138106132edec630705a09';
+
+  MenuItemsToRender = [] as any;
 
   readonly FaucetLink = FaucetLink;
 
@@ -174,8 +182,40 @@ export default class AppMenu extends Mixins(TranslationMixin) {
     return this.libraryTheme === Theme.LIGHT ? 'var(--s-color-theme-accent)' : 'var(--s-color-theme-accent-focused)';
   }
 
-  get sidebarMenuItems(): Array<SidebarMenuItemLink> {
-    const wbpsMenuItems = [PageNames.Manage, PageNames.Wallet, PageNames.OrderBook, PageNames.CropReceipts];
+  async getRole(): Promise<any> {
+    let list = [] as any;
+
+    await this.withApi(async () => {
+      list = await api.assets.getTokensAddressesList(this.accountAddress);
+    });
+
+    if (list.find((address) => address === this.CreditorToken)) return 'creditor';
+    if (list.find((address) => address === this.InvestorToken)) return 'investor';
+    if (list.find((address) => address === this.ManagerToken)) return 'manager';
+  }
+
+  getPages(role: string) {
+    // const PrestoManager = [PageNames.GrantAccess, PageNames.ManageRequests]
+    const PrestoManager = [];
+    const Investor = [PageNames.Manage, PageNames.OrderBook, PageNames.Wallet];
+    const Creditor = [PageNames.Manage, PageNames.OrderBook, PageNames.Wallet, PageNames.CropReceipts];
+
+    switch (role) {
+      case 'investor':
+        return Investor;
+      case 'creditor':
+        return Creditor;
+      case 'manager':
+        return PrestoManager;
+      default:
+        return [];
+    }
+  }
+
+  async getSidebarMenuItems(): Promise<any> {
+    const role = await this.getRole();
+
+    const wbpsMenuItems = this.getPages(role);
 
     let menuItems = SidebarMenuGroups;
 
@@ -191,7 +231,7 @@ export default class AppMenu extends Mixins(TranslationMixin) {
       menuItems = menuItems.filter(({ title }) => title !== PageNames.AssetOwnerContainer);
     }
 
-    return menuItems;
+    this.MenuItemsToRender = menuItems;
   }
 
   get currentPath(): string {
@@ -232,6 +272,10 @@ export default class AppMenu extends Mixins(TranslationMixin) {
   collapseMenu(e?: PointerEvent) {
     ((e?.target as HTMLElement | null)?.closest?.('#collapse-button') as HTMLElement | null)?.blur();
     this.setMenuCollapsed(!this.collapsed);
+  }
+
+  async updated(): Promise<void> {
+    if (!this.MenuItemsToRender.length) await this.getSidebarMenuItems();
   }
 }
 </script>

@@ -19,13 +19,13 @@
           size="small"
           class="explore-table"
         >
-          <s-table-column width="120">
+          <s-table-column width="70">
             <template #header>
               <span>{{ 'CR ID' }}</span>
             </template>
             <template v-slot="{ row }">
               <div>
-                <div>{{ row.id }}</div>
+                <div>{{ row.crId }}</div>
               </div>
             </template>
           </s-table-column>
@@ -59,17 +59,17 @@
               </div>
             </template>
           </s-table-column>
-          <s-table-column width="160">
+          <s-table-column width="180">
             <template #header>
               <span>{{ 'DEBITOR' }}</span>
             </template>
             <template v-slot="{ row }">
               <div>
-                <div>{{ row.debitor }}</div>
+                <div>{{ row.debtor }}</div>
               </div>
             </template>
           </s-table-column>
-          <s-table-column width="130">
+          <s-table-column width="110">
             <template #header>
               <span>{{ 'STATUS' }}</span>
             </template>
@@ -81,7 +81,9 @@
             </template>
           </s-table-column>
           <s-table-column>
-            <s-icon @click.native="processCropReceipt" name="el-icon-arrow-right" />
+            <template v-slot="{ row }">
+              <s-icon @click.native="processCropReceipt(row.crId)" name="el-icon-arrow-right" />
+            </template>
           </s-table-column>
         </s-table>
 
@@ -103,7 +105,7 @@
 </template>
 
 <script lang="ts">
-import { components, mixins } from '@soramitsu/soraneo-wallet-web';
+import { api, components, mixins } from '@soramitsu/soraneo-wallet-web';
 import { Component, Mixins } from 'vue-property-decorator';
 
 import ExplorePageMixin from '@/components/mixins/ExplorePageMixin';
@@ -112,6 +114,7 @@ import InvestorDeposit from '@/components/pages/Investor/Deposit.vue';
 import InvestorWithdraw from '@/components/pages/Investor/Withdraw.vue';
 import { PageNames } from '@/consts';
 import router, { goTo } from '@/router';
+import { state } from '@/store/decorators';
 
 import CropReceiptCreate from './CropReceiptCreate.vue';
 
@@ -125,59 +128,27 @@ import CropReceiptCreate from './CropReceiptCreate.vue';
   },
 })
 export default class CropReceipts extends Mixins(TranslationMixin, mixins.LoadingMixin, ExplorePageMixin) {
+  @state.wallet.account.address accountAddress!: string;
+
   showTable = true;
 
-  get requests() {
-    const fixture = {
-      id: '2342',
-      type: 'Deposit',
-      date: '23.11.2024',
-      amount: '343.88',
-      debitor: 'Name Surname',
-      status: 'Approved',
-    };
-    return [
-      fixture,
-      fixture,
-      fixture,
-      { ...fixture, status: 'Decision' },
-      { ...fixture, status: 'Decision' },
-      fixture,
-      { ...fixture, status: 'Closed' },
-      fixture,
-      fixture,
-      { ...fixture, status: 'New' },
-      fixture,
-      { ...fixture, status: 'New' },
-      fixture,
-      { ...fixture, status: 'Closed' },
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-      fixture,
-    ];
-  }
+  cropReceipts = [] as any;
 
   get tableItems() {
-    return this.getPageItems(this.requests);
+    return this.getPageItems(this.cropReceipts);
   }
 
   get total(): number {
-    return this.requests.length;
+    return this.cropReceipts.length;
   }
 
-  processCropReceipt(): void {
-    router.push({ name: PageNames.CropReceiptDetails, params: { id: 'ididid' } });
+  getCropReceipt(crId): any {
+    return this.cropReceipts.find((cr) => cr.crId === crId);
+  }
+
+  processCropReceipt(crId): void {
+    const details = this.getCropReceipt(crId);
+    router.push({ name: PageNames.CropReceiptDetails, params: { id: crId, details } });
   }
 
   getBalanceIndicatorClass(status): string {
@@ -187,11 +158,11 @@ export default class CropReceipts extends Mixins(TranslationMixin, mixins.Loadin
       case 'Approved':
         base.push('status-indicator--approved');
         break;
-      case 'New':
-        base.push('status-indicator--new');
+      case 'Rating':
+        base.push('status-indicator--rating');
         break;
-      case 'Closed':
-        base.push('status-indicator--closed');
+      case 'Declined':
+        base.push('status-indicator--declined');
         break;
       case 'Decision':
         base.push('status-indicator--decision');
@@ -209,6 +180,20 @@ export default class CropReceipts extends Mixins(TranslationMixin, mixins.Loadin
 
   handleBackFromCreation(): void {
     this.showTable = true;
+  }
+
+  async created(): Promise<void> {
+    this.withApi(async () => {
+      const cropReceipts = await api.presto.getCropReceipts(this.accountAddress);
+
+      const parsedCropReceipts = cropReceipts.map((request) => ({
+        ...request,
+        status: typeof request.status === 'string' ? request.status : Object.keys(request.status)[0],
+        date: new Date(Number(request.time.replace(/,/g, ''))).toLocaleDateString('en-US'),
+      }));
+
+      this.cropReceipts = parsedCropReceipts;
+    });
   }
 }
 </script>
@@ -236,12 +221,12 @@ export default class CropReceipts extends Mixins(TranslationMixin, mixins.Loadin
         background-color: #009900;
       }
 
-      &--new {
-        background-color: #ff9900;
+      &--declined {
+        background-color: #ff0000;
       }
 
-      &--closed {
-        background-color: #bbb;
+      &--rating {
+        background-color: #ff9900;
       }
 
       &--decision {
