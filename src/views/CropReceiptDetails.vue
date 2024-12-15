@@ -55,7 +55,7 @@
             </div>
             <div class="rating">
               <div class="subtitle">Rating</div>
-              <div>{{ details.score.rating }}</div>
+              <div>{{ details.score?.rating || 'Unset' }}</div>
             </div>
           </div>
           <s-divider />
@@ -247,6 +247,8 @@ By signing the Crop Receipt the Debtor [and Guarantor] acknowledges that the iss
         performanceTime: new Date(Number(request.perfomanceTime?.replace(/,/g, '') * 1000)).toLocaleDateString('en-US'), // typo on backend
         closeInitialPeriod: new Date(Number(request.closeInitialPeriod?.replace(/,/g, ''))).toLocaleDateString('en-US'),
       }));
+
+      console.log('parsedCropReceipts', parsedCropReceipts);
 
       const id = this.$route.params.id;
       if (id) this.details = parsedCropReceipts.find((cr) => cr.crId === id);
