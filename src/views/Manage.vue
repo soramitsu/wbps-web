@@ -117,6 +117,7 @@
 </template>
 
 <script lang="ts">
+import { FPNumber } from '@sora-substrate/math';
 import { api, components, mixins } from '@soramitsu/soraneo-wallet-web';
 import { Component, Mixins } from 'vue-property-decorator';
 
@@ -198,6 +199,7 @@ export default class ManageView extends Mixins(
         ...request,
         status: typeof request.status === 'string' ? request.status : Object.keys(request.status)[0],
         date: new Date(Number(request.time.replace(/,/g, ''))).toLocaleDateString('en-US'),
+        amount: FPNumber.fromCodecValue(request.amount).toString(),
       }));
 
       this.requests = parsedRequests;

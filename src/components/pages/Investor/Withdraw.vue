@@ -17,7 +17,7 @@
     <s-input
       class="input-textarea"
       type="textarea"
-      rows="17"
+      :rows="17"
       :disabled="loading"
       :placeholder="'Bank account details'"
       :maxlength="1000"
@@ -33,6 +33,7 @@
 </template>
 
 <script lang="ts">
+import { FPNumber } from '@sora-substrate/math';
 import { mixins, components, api } from '@soramitsu/soraneo-wallet-web';
 import { Component, Mixins } from 'vue-property-decorator';
 
@@ -63,8 +64,8 @@ export default class Deposit extends Mixins(mixins.TransactionMixin, mixins.Dial
 
   onCreate(): void {
     this.withNotifications(async () => {
+      // await api.presto.createWithdrawRequest(new FPNumber(this.amountToWithdraw).toCodecString(), this.bankDetails);
       await api.presto.createWithdrawRequest(this.amountToWithdraw, this.bankDetails);
-
       this.isVisible = false;
     });
   }

@@ -80,18 +80,19 @@
       </s-scrollbar>
     </div>
 
-    <div class="crop-receipt-actions">
-      <s-button class="btn s-typography-button--large" type="secondary" @click="onCancel">
-        {{ 'Cancel' }}
+    <div v-if="details.status === 'Decision'" class="crop-receipt-actions">
+      <s-button class="btn s-typography-button--large" type="secondary" @click="onDecline">
+        {{ 'Decline' }}
       </s-button>
-      <s-button class="btn s-typography-button--large" type="primary" @click="onProcess">
-        {{ 'Rate' }}
+      <s-button class="btn s-typography-button--large" type="primary" @click="onPublish">
+        {{ 'Publish' }}
       </s-button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { FPNumber } from '@sora-substrate/math';
 import { api, components, mixins } from '@soramitsu/soraneo-wallet-web';
 import { Component, Mixins } from 'vue-property-decorator';
 
@@ -103,7 +104,7 @@ import { state } from '@/store/decorators';
 @Component({
   components: {},
 })
-export default class CropReceiptDetails extends Mixins(TranslationMixin, mixins.LoadingMixin) {
+export default class CropReceiptDetails extends Mixins(mixins.TransactionMixin, TranslationMixin, mixins.LoadingMixin) {
   @state.wallet.account.address accountAddress!: string;
 
   details = {} as any;
@@ -112,8 +113,8 @@ export default class CropReceiptDetails extends Mixins(TranslationMixin, mixins.
     const base = ['status-indicator'];
 
     switch (status) {
-      case 'Approved':
-        base.push('status-indicator--approved');
+      case 'Published':
+        base.push('status-indicator--published');
         break;
       case 'Rating':
         base.push('status-indicator--rating');
@@ -135,8 +136,19 @@ export default class CropReceiptDetails extends Mixins(TranslationMixin, mixins.
     router.push({ name: PageNames.CropReceipts });
   }
 
-  onCancel(): void {}
-  onProcess(): void {}
+  onDecline(): void {
+    //
+  }
+  onPublish(): void {
+    this.withNotifications(async () => {
+      const { id: crId } = this.$route.params;
+      console.log('crId', crId);
+
+      if (crId) {
+        await api.presto.publishCropReceipt(Number(crId), 200);
+      }
+    });
+  }
 
   conditions = {
     basic: [
@@ -246,9 +258,8 @@ By signing the Crop Receipt the Debtor [and Guarantor] acknowledges that the iss
         dateOfIssue: new Date(Number(request.time?.replace(/,/g, ''))).toLocaleDateString('en-US'),
         performanceTime: new Date(Number(request.perfomanceTime?.replace(/,/g, '') * 1000)).toLocaleDateString('en-US'), // typo on backend
         closeInitialPeriod: new Date(Number(request.closeInitialPeriod?.replace(/,/g, ''))).toLocaleDateString('en-US'),
+        amount: FPNumber.fromCodecValue(request.amount),
       }));
-
-      console.log('parsedCropReceipts', parsedCropReceipts);
 
       const id = this.$route.params.id;
       if (id) this.details = parsedCropReceipts.find((cr) => cr.crId === id);
@@ -338,7 +349,7 @@ By signing the Crop Receipt the Debtor [and Guarantor] acknowledges that the iss
     display: inline-block;
     margin-right: 8px;
 
-    &--approved {
+    &--published {
       background-color: #009900;
     }
 

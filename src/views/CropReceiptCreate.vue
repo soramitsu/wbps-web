@@ -104,6 +104,7 @@
 </template>
 
 <script lang="ts">
+import { FPNumber } from '@sora-substrate/math';
 import { mixins, components, api } from '@soramitsu/soraneo-wallet-web';
 import { Component, Mixins } from 'vue-property-decorator';
 
@@ -194,7 +195,7 @@ By signing the Crop Receipt the Debtor [and Guarantor] acknowledges that the iss
 
     this.withNotifications(async () => {
       await api.presto.createCropReceipt(
-        this.amount,
+        new FPNumber(this.amount).toCodecString(),
         this.selectedCountry,
         Date.now(),
         this.dateOfIssue as any,
@@ -208,6 +209,7 @@ By signing the Crop Receipt the Debtor [and Guarantor] acknowledges that the iss
       router.push({ name: PageNames.CropReceipts });
     });
   }
+
   handleSelectCountry(country: string): void {
     this.selectedCountry = country;
   }

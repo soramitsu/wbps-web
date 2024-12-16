@@ -105,6 +105,7 @@
 </template>
 
 <script lang="ts">
+import { FPNumber } from '@sora-substrate/math';
 import { api, components, mixins } from '@soramitsu/soraneo-wallet-web';
 import { Component, Mixins } from 'vue-property-decorator';
 
@@ -155,8 +156,8 @@ export default class CropReceipts extends Mixins(TranslationMixin, mixins.Loadin
     const base = ['status-indicator'];
 
     switch (status) {
-      case 'Approved':
-        base.push('status-indicator--approved');
+      case 'Published':
+        base.push('status-indicator--published');
         break;
       case 'Rating':
         base.push('status-indicator--rating');
@@ -190,6 +191,7 @@ export default class CropReceipts extends Mixins(TranslationMixin, mixins.Loadin
         ...request,
         status: typeof request.status === 'string' ? request.status : Object.keys(request.status)[0],
         date: new Date(Number(request.time.replace(/,/g, ''))).toLocaleDateString('en-US'),
+        amount: FPNumber.fromCodecValue(request.amount).toString(),
       }));
 
       this.cropReceipts = parsedCropReceipts;
@@ -217,7 +219,7 @@ export default class CropReceipts extends Mixins(TranslationMixin, mixins.Loadin
       display: inline-block;
       margin-right: 8px;
 
-      &--approved {
+      &--published {
         background-color: #009900;
       }
 

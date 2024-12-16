@@ -36,6 +36,7 @@
 </template>
 
 <script lang="ts">
+import { FPNumber } from '@sora-substrate/math';
 import { mixins, components, api } from '@soramitsu/soraneo-wallet-web';
 import { Component, Mixins } from 'vue-property-decorator';
 
@@ -59,7 +60,7 @@ export default class Deposit extends Mixins(mixins.TransactionMixin, mixins.Dial
   onCreate(): void {
     this.withNotifications(async () => {
       await api.presto.createDepositRequest(
-        this.amountSent,
+        new FPNumber(this.amountSent).toCodecString(),
         this.invoiceNumber,
         'important details to know fiat reference'
       );

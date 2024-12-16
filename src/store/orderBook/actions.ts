@@ -47,9 +47,11 @@ const actions = defineActions({
     const { whitelist } = rootGetters.wallet.account;
     const orderBooks = await api.orderBook.getOrderBooks();
 
+    const PRUSD = '0x0200100000000000000000000000000000000000000000000000000000000000';
+
     const orderBooksWhitelist = Object.entries(orderBooks).reduce<Record<string, OrderBook>>((buffer, [key, book]) => {
       const { base, quote } = book.orderBookId;
-      if ([base, quote].every((address) => address in whitelist)) {
+      if ([base, quote].every((address) => address in whitelist) || quote === PRUSD) {
         buffer[key] = book;
       }
       return buffer;
