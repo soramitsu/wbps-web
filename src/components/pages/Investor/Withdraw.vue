@@ -64,8 +64,7 @@ export default class Deposit extends Mixins(mixins.TransactionMixin, mixins.Dial
 
   onCreate(): void {
     this.withNotifications(async () => {
-      // await api.presto.createWithdrawRequest(new FPNumber(this.amountToWithdraw).toCodecString(), this.bankDetails);
-      await api.presto.createWithdrawRequest(this.amountToWithdraw, this.bankDetails);
+      await api.presto.createWithdrawRequest(new FPNumber(this.amountToWithdraw).toCodecString(), this.bankDetails);
       this.isVisible = false;
     });
   }
