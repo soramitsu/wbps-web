@@ -264,7 +264,7 @@ By signing the Crop Receipt the Debtor [and Guarantor] acknowledges that the iss
         dateOfIssue: new Date(Number(request.time?.replace(/,/g, ''))).toLocaleDateString('en-US'),
         performanceTime: new Date(Number(request.perfomanceTime?.replace(/,/g, '') * 1000)).toLocaleDateString('en-US'), // typo on backend
         closeInitialPeriod: new Date(Number(request.closeInitialPeriod?.replace(/,/g, ''))).toLocaleDateString('en-US'),
-        amount: FPNumber.fromCodecValue(request.amount),
+        amount: FPNumber.fromCodecValue(request.amount).toString(),
       }));
 
       const id = this.$route.params.id;
