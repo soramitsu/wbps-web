@@ -1,9 +1,9 @@
 $s-color-brand-day: #a19a9d; // 0d0248
 // Primary theme colors
-$s-color-theme-accent: #f8087b; // NEU bright pink fluro
-$s-color-theme-accent-hover: #f754a3; // NEU pale quartz pink
-$s-color-theme-accent-pressed: #bf065f;
-$s-color-theme-accent-focused: #ab0555;
+$s-color-theme-accent: #3478c3;
+$s-color-theme-accent-hover: #5096e2;
+$s-color-theme-accent-pressed: #2a6bb2;
+$s-color-theme-accent-focused: #0082d8;
 // Secondary theme colors
 $s-color-theme-secondary: #44e5b2;
 $s-color-theme-secondary-hover: #24daa0;
@@ -44,14 +44,24 @@ $s-size-small: 32px;
 $s-size-medium: 42px;
 $s-size-big: 58px;
 // Shadows
-$s-shadow-surface: 1px 1px 5px var(--s-shadow-color-dark), inset 1px 1px 1px var(--s-shadow-color-dark);
+$s-shadow-surface:
+  1px 1px 5px var(--s-shadow-color-dark),
+  inset 1px 1px 1px var(--s-shadow-color-dark);
 $s-shadow-tooltip: 0px 1px 4px rgba(13, 2, 72, 0.35);
-$s-shadow-tab: 1px 1px 2px #ffffff, inset 1px 1px 2px rgba(0, 0, 0, 0.1); // 0px 1px 1px rgba(0, 0, 0, 0.1);
+$s-shadow-tab:
+  1px 1px 2px #ffffff,
+  inset 1px 1px 2px rgba(0, 0, 0, 0.1); // 0px 1px 1px rgba(0, 0, 0, 0.1);
 $s-shadow-dropdown: 0px 4px 8px rgba(19, 19, 19, 0.15);
 $s-shadow-mobile-tap-bar: 0px -4px 8px rgba(19, 19, 19, 0.15);
 $s-shadow-mobile-side-menu: -4px 4px 8px rgba(19, 19, 19, 0.15);
-$s-shadow-dialog: -5px -5px 10px var(--s-shadow-color-light), 1px 1px 10px var(--s-shadow-color-dark), inset 1px 1px 2px var(--s-shadow-color-light-dark);
-$s-shadow-dialog--dark: -5px -5px 10px var(--s-shadow-color-dark-lighten--dark), 2px 2px 15px var(--s-color-base-background--dark), inset 1px 1px 2px var(--s-shadow-color-dark-lighten--dark);
+$s-shadow-dialog:
+  -5px -5px 10px var(--s-shadow-color-light),
+  1px 1px 10px var(--s-shadow-color-dark),
+  inset 1px 1px 2px var(--s-shadow-color-light-dark);
+$s-shadow-dialog--dark:
+  -5px -5px 10px var(--s-shadow-color-dark-lighten--dark),
+  2px 2px 15px var(--s-color-base-background--dark),
+  inset 1px 1px 2px var(--s-shadow-color-dark-lighten--dark);
 
 // Border Radius
 $s-border-radius-base: 16px;

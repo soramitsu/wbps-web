@@ -22,7 +22,6 @@
     <app-footer />
     <referrals-confirm-invite-user :visible.sync="showConfirmInviteUser" />
     <bridge-transfer-notification />
-    <app-mobile-popup :visible.sync="showSoraMobilePopup" />
     <app-browser-notifs-enable-dialog :visible.sync="showBrowserNotifPopup" @set-dark-page="setDarkPage" />
     <app-browser-notifs-blocked-dialog :visible.sync="showBrowserNotifBlockedPopup" />
     <app-browser-notifs-blocked-rotate-phone :visible.sync="orientationWarningVisible" />
@@ -93,7 +92,6 @@ import type DesignSystem from '@soramitsu-ui/ui-vue2/lib/types/DesignSystem';
     AppFooter,
     AppMenu,
     Alerts: lazyComponent(Components.Alerts),
-    AppMobilePopup: lazyComponent(Components.AppMobilePopup),
     AppLogoButton: lazyComponent(Components.AppLogoButton),
     AppDisclaimer: lazyComponent(Components.AppDisclaimer),
     AppBrowserNotifsEnableDialog: lazyComponent(Components.AppBrowserNotifsEnableDialog),
@@ -109,7 +107,6 @@ import type DesignSystem from '@soramitsu-ui/ui-vue2/lib/types/DesignSystem';
 })
 export default class App extends Mixins(mixins.TransactionMixin, NodeErrorMixin) {
   /** Product-based class fields should be like show${product}Popup */
-  showSoraMobilePopup = false;
   menuVisibility = false;
   showConfirmInviteUser = false;
   showNotifsDarkPage = false;
@@ -471,6 +468,12 @@ export default class App extends Mixins(mixins.TransactionMixin, NodeErrorMixin)
 </script>
 
 <style lang="scss">
+button.el-button.neumorphic.s-primary.focusing,
+button.el-button.neumorphic.s-primary:focus,
+button.el-button.neumorphic.s-primary:hover {
+  box-shadow: unset !important;
+}
+
 html {
   overflow-y: hidden;
   font-size: var(--s-font-size-small);

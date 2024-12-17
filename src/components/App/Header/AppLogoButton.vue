@@ -1,6 +1,6 @@
 <template>
   <s-button :class="['app-logo', { responsive }]" type="link" size="large" v-on="$listeners">
-    <polkaswap-logo :theme="theme" class="app-logo__image" />
+    <presto-logo :theme="theme" class="app-logo__image" />
   </s-button>
 </template>
 
@@ -8,11 +8,11 @@
 import Theme from '@soramitsu-ui/ui-vue2/lib/types/Theme';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
-import PolkaswapLogo from '@/components/shared/Logo/Polkaswap.vue';
+import PrestoLogo from '@/components/shared/Logo/Presto.vue';
 
 @Component({
   components: {
-    PolkaswapLogo,
+    PrestoLogo,
   },
 })
 export default class AppLogoButton extends Vue {

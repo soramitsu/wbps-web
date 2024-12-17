@@ -21,24 +21,6 @@
         </a>
       </div>
       <s-divider />
-      <template v-for="product in products">
-        <a
-          v-if="product.href"
-          :key="product.title"
-          class="app-info-link app-info-link--product"
-          target="_blank"
-          rel="nofollow noopener"
-          :href="product.href"
-        >
-          <s-icon v-if="product.icon" :name="product.icon" size="20" />
-          <span>{{ product.title }}</span>
-        </a>
-        <div v-else v-button :key="product.title" class="app-info-link app-info-link--product" @click="product.action">
-          <s-icon v-if="product.icon" :name="product.icon" size="20" />
-          <span>{{ product.title }}</span>
-        </div>
-      </template>
-      <s-divider />
       <div>
         <a
           v-for="(link, index) in sortedTextLinks"
