@@ -151,7 +151,7 @@ export default class CropReceiptDetails extends Mixins(mixins.TransactionMixin, 
       const { id: crId } = this.$route.params;
 
       if (crId) {
-        await api.presto.publishCropReceipt(Number(crId), this.details.amount);
+        await api.presto.publishCropReceipt(Number(crId), new FPNumber(this.details.amount).toCodecString());
       }
     });
   }
