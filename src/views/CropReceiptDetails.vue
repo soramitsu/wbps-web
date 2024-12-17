@@ -150,8 +150,13 @@ export default class CropReceiptDetails extends Mixins(mixins.TransactionMixin, 
     this.withNotifications(async () => {
       const { id: crId } = this.$route.params;
 
+      if (Number(this.details.amount) < 1) {
+        this.showAppNotification('Crop receipt amount is less than 1', 'error');
+        return;
+      }
+
       if (crId) {
-        await api.presto.publishCropReceipt(Number(crId), new FPNumber(this.details.amount).toCodecString());
+        await api.presto.publishCropReceipt(Number(crId), this.details.amount);
       }
     });
   }
